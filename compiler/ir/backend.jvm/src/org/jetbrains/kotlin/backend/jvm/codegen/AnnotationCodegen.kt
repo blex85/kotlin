@@ -190,14 +190,10 @@ class AnnotationCodegen(
     private fun getAnnotationArgumentJvmName(annotationClass: IrClass?, parameterName: Name): String {
         if (annotationClass == null) return parameterName.asString()
 
-        val propertyOrGetter = annotationClass.declarations.singleOrNull {
-            // IrSimpleFunction if lowered, IrProperty with a getter if imported
-            (it is IrSimpleFunction && it.correspondingPropertySymbol?.owner?.name == parameterName) ||
-                    (it is IrProperty && it.name == parameterName)
-        } ?: return parameterName.asString()
-        val getter = propertyOrGetter as? IrSimpleFunction
-            ?: (propertyOrGetter as IrProperty).getter
-            ?: error("No getter for annotation property: ${propertyOrGetter.render()}")
+        // TODO (review): verify that this change works
+        val property = annotationClass.properties.singleOrNull { it.name == parameterName }
+            ?: return parameterName.asString()
+        val getter = property.getter ?: error("No getter for annotation property: ${property.render()}")
         return methodSignatureMapper.mapFunctionName(getter)
     }
 

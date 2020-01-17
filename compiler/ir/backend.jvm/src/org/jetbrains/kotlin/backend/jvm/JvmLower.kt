@@ -88,7 +88,7 @@ private val lateinitPhase = makeIrFilePhase(
 private val propertiesPhase = makeIrFilePhase(
     ::JvmPropertiesLowering,
     name = "Properties",
-    description = "Move fields and accessors for properties to their classes, and create synthetic methods for property annotations",
+    description = "Erase fields of properties moved to the outer class, and create synthetic methods for property annotations",
     stickyPostconditions = setOf((PropertiesLowering)::checkNoProperties)
 )
 

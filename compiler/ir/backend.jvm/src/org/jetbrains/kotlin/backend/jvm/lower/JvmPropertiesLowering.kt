@@ -24,6 +24,8 @@ import org.jetbrains.kotlin.ir.expressions.impl.IrBlockBodyImpl
 import org.jetbrains.kotlin.ir.symbols.impl.IrSimpleFunctionSymbolImpl
 import org.jetbrains.kotlin.ir.types.classifierOrFail
 import org.jetbrains.kotlin.ir.types.typeWith
+import org.jetbrains.kotlin.ir.util.hasAnnotation
+import org.jetbrains.kotlin.ir.util.parentAsClass
 import org.jetbrains.kotlin.ir.util.transformDeclarationsFlat
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
@@ -46,12 +48,18 @@ class JvmPropertiesLowering(private val context: JvmBackendContext) : IrElementT
     private fun lowerProperty(declaration: IrDeclaration, kind: ClassKind): List<IrDeclaration>? =
         if (declaration is IrProperty)
             ArrayList<IrDeclaration>(4).apply {
+                val field = declaration.backingField
+
                 // JvmFields in a companion object refer to companion's owners and should not be generated within companion.
-                if (kind != ClassKind.ANNOTATION_CLASS && declaration.backingField?.parent == declaration.parent) {
-                    addIfNotNull(declaration.backingField)
+                val isJvmFieldInCompanion =
+                    field?.hasAnnotation(JvmAbi.JVM_FIELD_ANNOTATION_FQ_NAME) == true &&
+                            declaration.parentAsClass.isCompanion
+                if (!isJvmFieldInCompanion) {
+                    add(declaration)
+                    if (kind != ClassKind.ANNOTATION_CLASS && field?.parent != declaration.parent) {
+                        declaration.backingField = null
+                    }
                 }
-                addIfNotNull(declaration.getter)
-                addIfNotNull(declaration.setter)
 
                 if (declaration.annotations.isNotEmpty()) {
                     add(createSyntheticMethodForAnnotations(declaration))
