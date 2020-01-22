@@ -2603,9 +2603,14 @@ public class IrCompileKotlinAgainstInlineKotlinTestGenerated extends AbstractIrC
             KotlinTestUtils.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler/testData/codegen/boxInline/nullChecks"), Pattern.compile("^(.+)\\.kt$"), null, TargetBackend.JVM_IR, true);
         }
 
-        @TestMetadata("parameterNullCheck_1_4.kt")
-        public void testParameterNullCheck_1_4() throws Exception {
-            runTest("compiler/testData/codegen/boxInline/nullChecks/parameterNullCheck_1_4.kt");
+        @TestMetadata("parameterNullCheck.kt")
+        public void testParameterNullCheck() throws Exception {
+            runTest("compiler/testData/codegen/boxInline/nullChecks/parameterNullCheck.kt");
+        }
+
+        @TestMetadata("parameterNullCheck_1_3.kt")
+        public void testParameterNullCheck_1_3() throws Exception {
+            runTest("compiler/testData/codegen/boxInline/nullChecks/parameterNullCheck_1_3.kt");
         }
     }
 
