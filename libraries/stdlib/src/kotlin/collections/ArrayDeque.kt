@@ -24,6 +24,7 @@ public class ArrayDeque<E> : AbstractMutableList<E> {
     private var elementData: Array<Any?>
 
     override var size: Int = 0
+        private set
 
     /**
      * Constructs an empty deque with specified [initialCapacity], or throws [IllegalArgumentException] if [initialCapacity] is negative.
